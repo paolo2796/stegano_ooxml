@@ -13,37 +13,35 @@ tree = etree.parse('minimal/word/document.xml')
 root = tree.getroot()
 
 
-def merge_possible_run_elements(items):
-     mismatch = False
-     for i, item in enumerate(items):
-         for child_of_run_element in item:
+
+def merge_possible_run_elements(paragraph):
+     #ricerca run elements nel paragrafo
+     run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
+     i = 0
+     for node in run_property_elements:
+         for child_of_node in node:
             mismatch = False
-            if child_of_run_element.tag == RUN_ELEM_PROPERTY_TAG :
-                for child_of_rpr in child_of_run_element:
-                    print(child_of_rpr)
-            #endif
-         '''
-         
-            for  child_of_run_element in item:
-             mismatch = False
-                 for j, child_of_rpr in child_of_run_element :
-                     if child_of_rpr == items[i + 1][0][j] :
-                         continue
-                     else:
-                         mismatch = True
-                         break
-             #endif     
-         '''
+            if i + 1 < len(run_property_elements):
+                child_of_node_next = run_property_elements[i + 1].find("./"  + child_of_node.tag)
+                if child_of_node_next != None :
+                    if child_of_node_next.attrib != child_of_node.attrib:
+                        mismatch = True
+                        break
+
+         #endfor
+         i +=1
 
 
 
 
 
-paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG + "[2]")
-print(paragraphs)
+
+paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
+for node in paragraphs:
+    merge_possible_run_elements(node)
 exit(0)
 
-
+'''
 for child in root:
     if child.tag == BODY_TAG:
         for child_of_body in child :
@@ -55,7 +53,9 @@ for child in root:
                             if(child_of_run_element.tag == RUN_ELEM_PROPERTY_TAG ) :
                                 arr_run_elems_property.append(child_of_paragraph)
                 # end  child_of_paragraph
-                merge_possible_run_elements(arr_run_elems_property)
+                merge_possible_run_elements(arr_run_elems_property) 
+'''
+
 
 
 
