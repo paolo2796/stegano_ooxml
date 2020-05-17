@@ -4,19 +4,36 @@
       <w:p w:rsidP="00D31D50" w:rsidRDefault="0042771C" w:rsidRPr="00372291" w:rsdidR="004358AB">
          <w:r w:rsidRPr="00372291">
            <w:rPr>
-              <w:rFonts w:hint="eastAsia" />
+              <w:rFonts w:hint="ee" />
               <w:sz w:val="28" />
-              <w:szCs w:val="28" />
+              <w:szCs w:val="27" />
            </w:rPr>
             <w:t xml:space="preserve">Information hiding</w:t>
          </w:r>
          <w:r w:rsidRPr="00372292">
            <w:rPr>
-              <w:rFonts w:hint="eastAsia" />
+              <w:rFonts w:hint="ee" />
               <w:sz w:val="28" />
               <w:szCs w:val="28" />
            </w:rPr>
             <w:t xml:space="preserve">Information hiding 2</w:t>
+         </w:r>
+
+          <w:r w:rsidRPr="00372293">
+           <w:rPr>
+              <w:rFonts w:hint="eastAsia" />
+              <w:sz w:val="28" />
+              <w:szCs w:val="29" />
+           </w:rPr>
+            <w:t xml:space="preserve">Information hiding 3</w:t>
+         </w:r>
+         <w:r w:rsidRPr="00372294">
+           <w:rPr>
+              <w:rFonts w:hint="eastAsia" />
+              <w:sz w:val="28" />
+              <w:szCs w:val="31" />
+           </w:rPr>
+            <w:t xml:space="preserve">Information hiding 4</w:t>
          </w:r>
       </w:p>
       <w:sectPr w:rsidR="005F670F">
