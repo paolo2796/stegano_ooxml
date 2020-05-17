@@ -22,7 +22,6 @@ root = tree.getroot()
 def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
-     run_elements_to_merge = []
      i = 0
      for node in run_property_elements:
         mismatch = False
@@ -33,18 +32,42 @@ def merge_possible_run_elements(paragraph):
                 if child_of_node_j == None or (child_of_node.tag!= SZCS_TAG and child_of_node_j.attrib != child_of_node.attrib):
                     mismatch = True
                     break
-            if(mismatch != True):
-                j +=1
+            #merge nodi fino al j - 1 elemento
+            if mismatch == True:
+                x = i + 1
+                while x < j:
+                    #append  node i + 1 to base node
+                    node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x + 1).__str__() + "]" + "/" + TEXT_TAG)
+                    paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]").append(node)
+                    x += 1
+                x = i + 1
+                while x < j:
+                    #rimuovo elemento successivo al nodo merge
+                    run_property_elements.remove(run_property_elements[i + 1])
+                    paragraph.remove(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 2).__str__() + "]"))
+                    x += 1
+            #se sono arrivato alla fine dei nodi del paragrafo --> tutti i nodi hanno gli stessi attributi
+            elif (j == len(run_property_elements) - 1):
+                x = i + 1
+                while x <= j:
+                    #append  node i + 1 to base node
+                    node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x + 1).__str__() + "]" + "/" + TEXT_TAG)
+                    paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]").append(node)
+                    x += 1
+                x = i + 1
+                while x <= j:
+                    #rimuovo elemento successivo al nodo merge
+                    run_property_elements.remove(run_property_elements[i + 1])
+                    paragraph.remove(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 2).__str__() + "]"))
+                    x += 1
             else:
-                j -=1
-        x=i
-        while x < j:
-            run_elements_to_merge.append(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x +1).__str__() + "]"))
-            x +=1
-        print(run_elements_to_merge)
+                j += 1
+
+        tree.write("output.xml")
         if(j== len(run_property_elements)):
             break
         i +=1
+
 
 
 
