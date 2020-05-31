@@ -5,35 +5,21 @@
          <w:r w:rsidRPr="00372291">
            <w:rPr>
               <w:rFonts w:hint="eastAsia" />
-              <w:sz w:val="28" />
+              <w:sz w:val="29" />
               <w:szCs w:val="27" />
            </w:rPr>
             <w:t xml:space="preserve">Information hiding</w:t>
          </w:r>
-         <w:r w:rsidRPr="00372292">
+
+          <w:r w:rsidRPr="00372291">
            <w:rPr>
-              <w:rFonts w:hint="eastAsia2" />
-              <w:sz w:val="28" />
-              <w:szCs w:val="28" />
-           </w:rPr>
-            <w:t xml:space="preserve">Information hiding 2</w:t>
-         </w:r>
-          <w:r w:rsidRPr="00372293">
-           <w:rPr>
-              <w:rFonts w:hint="eastAsia3" />
-              <w:sz w:val="28" />
+              <w:rFonts w:hint="eastAmerica" />
+              <w:sz w:val="29" />
               <w:szCs w:val="27" />
            </w:rPr>
-            <w:t xml:space="preserve">Information hiding 3</w:t>
+            <w:t xml:space="preserve">Information hiding2</w:t>
          </w:r>
-          <w:r w:rsidRPr="00372293">
-           <w:rPr>
-              <w:rFonts w:hint="eastAsia" />
-              <w:sz w:val="28" />
-              <w:szCs w:val="27" />
-           </w:rPr>
-            <w:t xml:space="preserve">Information hiding 4</w:t>
-         </w:r>
+
       </w:p>
       <w:sectPr w:rsidR="005F670F">
          <w:pgSz w:w="12240" w:h="15840" />
