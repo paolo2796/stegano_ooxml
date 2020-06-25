@@ -7,12 +7,20 @@
             <w:rPr />
          </w:pPr>
          <w:r>
-            <w:rPr />
-            <w:t>Information hiding</w:t>
+            <w:rPr>
+               <w:rFonts w:hint="eastAsia"></w:rFonts>
+               <w:sz w:val="28"></w:sz>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">Information hiding</w:t>
          </w:r>
           <w:r>
-            <w:rPr />
-            <w:t>Information hiding2</w:t>
+            <w:rPr>
+               <w:rFonts w:hint="eastAsia"></w:rFonts>
+               <w:sz w:val="28"></w:sz>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+             <w:t>Information hiding1</w:t>
          </w:r>
       </w:p>
       <w:p>
@@ -21,7 +29,8 @@
             <w:rPr />
          </w:pPr>
          <w:r>
-            <w:rPr />
+            <w:rPr>
+            </w:rPr>
             <w:t>Information hiding2</w:t>
          </w:r>
       </w:p>

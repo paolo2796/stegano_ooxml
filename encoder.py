@@ -1,13 +1,7 @@
 from lxml import etree
-import xml.etree.ElementTree as ET
-
-import array
 import copy
+import random
 
-
-class MisMatchexception(Exception):
-   """Base class for other exceptions"""
-   pass
 
 PREFIX_WORD_PROC = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 PARAGRAPH_TAG = PREFIX_WORD_PROC + "p"
@@ -18,11 +12,10 @@ TEXT_TAG = PREFIX_WORD_PROC + "t"
 SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 
-ENCODED_INFORMATION = ""
+ENCODED_INFORMATION = "a"
 ENCODED_INFORMATION_BITS = (''.join(format(ord(x), '#010b') for x in ENCODED_INFORMATION))[2:]
 
-tree = etree.parse('minimal/word/document.xml')
-root = tree.getroot()
+
 
 
 def merge_possible_run_elements(paragraph):
@@ -35,7 +28,7 @@ def merge_possible_run_elements(paragraph):
         while mismatch != True and j < len(run_property_elements):
             for child_of_node in node:
                 child_of_node_j = run_property_elements[j].find("./"  + child_of_node.tag)
-                if child_of_node_j == None or (child_of_node.tag!= SZCS_TAG and child_of_node_j.attrib != child_of_node.attrib):
+                if child_of_node_j == None or (child_of_node.tag != SZCS_TAG and child_of_node_j.attrib != child_of_node.attrib):
                     mismatch = True
                     break
             #merge nodi fino al j - 1 elemento
@@ -83,6 +76,10 @@ def shift_run_element_by_pos(paragraph,start):
         count -= 1
 
 
+#START
+
+tree = etree.parse('minimal/word/document.xml')
+root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
 i = 0
 # step 10 -> Repeat Step 2 to Step 9 until all paragraph elements have been addressed.
@@ -109,6 +106,18 @@ for paragraph in paragraphs:
         #step 5 ->Make a count N=1 to accumulate the number of characters to be divided. Count the number of characters in T, and record it to C.
         count = len(tag_element.text)
         while count >=1:
+
+            count_zero = 0
+            j = i
+            while ENCODED_INFORMATION_BITS[j % len(ENCODED_INFORMATION_BITS)] == "0":
+                j+=1
+                count_zero+=1
+
+            if count < count_zero + 1:
+                node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]")
+                if node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
+                    node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",(-(count_zero + 1)).__str__())
+                break
             #step 6 -> Read one bit from the encoded information H circularly, decrease the value of C by one (in this process, assume the digit “1” is used for splitting):
             # case a
             if(ENCODED_INFORMATION_BITS[i % len(ENCODED_INFORMATION_BITS)]) == "0":
@@ -120,11 +129,13 @@ for paragraph in paragraphs:
                 new_run_elem = copy.copy(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]"))
                 # step 8 -> Modify the splitting mark <w:szCs> in the run elements alternatively.
                 if new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
-                    new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val","32")
-                paragraph.insert(offset_run_elem,new_run_elem)
-                offset_run_elem += 1
+                    new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,10).__str__())
                 tag_element.text = text[0:N]
-                new_run_elem.find("./" + TEXT_TAG).text = text[N:]
+                #check if new_run_elem contain text, otherwise no insert
+                if len(text[N:])>0:
+                    new_run_elem.find("./" + TEXT_TAG).text = text[N:]
+                    paragraph.insert(offset_run_elem,new_run_elem)
+                    offset_run_elem += 1
                 tree.write("output.xml")
                 N = 1
             i += 1
@@ -133,7 +144,7 @@ for paragraph in paragraphs:
         i_run_elements += 1
         offset_run_elem += 1
         # step 9 -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
-    # push di tutti i nodi != RUN_ELEMENT_TAG memorizza in arr_childs_par_to_save
+    # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
     for item in arr_childs_par_to_save:
         paragraph.append(item)
 
