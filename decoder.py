@@ -22,8 +22,6 @@ def toText(message):
     if extra>0:
         padsize = 8 - extra
         message += message + ('0' * padsize)
-    print(message)
-    print([utils.binarytoDecimal(message[i:i+8]) for i in range(0, len(message), 8)])
     return [chr(utils.binarytoDecimal(message[i:i+8])) for i in range(0, len(message), 8)]
 
 #step 1 -> read the codes of "document.xml". Initialize a set M to record the circular embedded informaton H.
@@ -40,11 +38,10 @@ for paragraph in paragraphs:
     i_run_elements = 0
     while i_run_elements < len(run_elements):
         curr_run_elem = run_elements[i_run_elements]
+        print(curr_run_elem.find("./" + TEXT_TAG).text)
         mismatch = False
         if i_run_elements + 1 < len(run_elements):
             next_run_elem = run_elements[i_run_elements + 1]
-            print(curr_run_elem)
-            print(next_run_elem)
             #step 4 -> compare the attributes in the current run element and the next run element
             j = i_run_elements + 1
             curr_property_elements = curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG)
@@ -65,17 +62,14 @@ for paragraph in paragraphs:
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) - 1))
         #last run elem of paragrap --> apply case (A)
-        else:
-            message += ((- int((curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val"))) )-1) * "0"
-            message += "1"
-        print(message)
 
         # step5 -> Repeat step 4 until all run elements in P have been addressed
     #step 6 -> repeat step 2 to step 5 until all paragraph elements have been addressed
         i_run_elements += 1
 
 #step 7 -> extract text from binary
-print(toText(message))
+string_enc = "".join(chr(int("".join(map(str,message[i:i+8])),2)) for i in range(0,len(message),8))
+print("TESTO SEGRETO: " + string_enc)
 
 
 

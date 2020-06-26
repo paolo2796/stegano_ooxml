@@ -1,6 +1,7 @@
 from lxml import etree
 import copy
 import random
+import utils
 
 
 PREFIX_WORD_PROC = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
@@ -12,12 +13,9 @@ TEXT_TAG = PREFIX_WORD_PROC + "t"
 SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 
-ENCODED_INFORMATION = "a"
-ENCODED_INFORMATION_BITS = (''.join(format(ord(x), '#010b') for x in ENCODED_INFORMATION))[2:]
-
-
-
-
+ENCODED_INFORMATION = "anna"
+ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
+print(ENCODED_INFORMATION_BITS)
 def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
@@ -76,6 +74,23 @@ def shift_run_element_by_pos(paragraph,start):
         count -= 1
 
 
+def check_if_available_space(index,paragraph):
+    count_zero = 0
+    j = i
+    while ENCODED_INFORMATION_BITS[j % len(ENCODED_INFORMATION_BITS)] == "0":
+        j += 1
+        count_zero += 1
+    if count < count_zero + 1:
+        node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]")
+        if node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
+            node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "-1")
+        else:
+            etree.SubElement(node, SZCS_TAG)
+            node.find("./" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "-1")
+        return False
+
+    return True
+
 #START
 
 tree = etree.parse('minimal/word/document.xml')
@@ -107,17 +122,10 @@ for paragraph in paragraphs:
         count = len(tag_element.text)
         while count >=1:
 
-            count_zero = 0
-            j = i
-            while ENCODED_INFORMATION_BITS[j % len(ENCODED_INFORMATION_BITS)] == "0":
-                j+=1
-                count_zero+=1
-
-            if count < count_zero + 1:
-                node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]")
-                if node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
-                    node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",(-(count_zero + 1)).__str__())
+            #check if enough space to inject information coded remain
+            if(check_if_available_space(i,paragraph) == False):
                 break
+
             #step 6 -> Read one bit from the encoded information H circularly, decrease the value of C by one (in this process, assume the digit “1” is used for splitting):
             # case a
             if(ENCODED_INFORMATION_BITS[i % len(ENCODED_INFORMATION_BITS)]) == "0":
