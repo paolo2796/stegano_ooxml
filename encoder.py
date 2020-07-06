@@ -123,7 +123,17 @@ for paragraph in paragraphs:
     #step 4 -> Extract a run element <w:r>…</w:r> to R, corresponding text element <w:t>…</w:t> to T, and the corresponding attributes to A.
     while i_run_elements <= len(run_elements):
         N = 1
+        #se non contiene il tag <w:t> -> aggiungilo al run element corrente
+        if run_elements[i_run_elements - 1].find("./" + TEXT_TAG) == None:
+            run_elements[i_run_elements - 1].append(etree.Element(TEXT_TAG))
+            run_elements[i_run_elements - 1].find("./" + TEXT_TAG).text=""
+
         tag_element = run_elements[i_run_elements - 1].find("./" + TEXT_TAG)
+        #se non contiene il tag szCS lo aggiungo al run element corrente
+        if run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) == None:
+            run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG).append(etree.Element(SZCS_TAG))
+            run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1, 10).__str__())
+
         #step 5 ->Make a count N=1 to accumulate the number of characters to be divided. Count the number of characters in T, and record it to C.
         count = len(tag_element.text)
         while count >=1:
@@ -144,6 +154,11 @@ for paragraph in paragraphs:
                 # step 8 -> Modify the splitting mark <w:szCs> in the run elements alternatively.
                 if new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,10).__str__())
+                #aggiungo tag SZCS all'elemento rpr
+                else:
+                    new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG).insert(1,etree.Element(SZCS_TAG))
+                    new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,10).__str__())
+
                 tag_element.text = text[0:N]
                 new_run_elem.find("./" + TEXT_TAG).text = text[N:]
                 paragraph.insert(offset_run_elem,new_run_elem)
