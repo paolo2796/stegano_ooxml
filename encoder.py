@@ -24,6 +24,10 @@ def merge_possible_run_elements(paragraph):
      for node in run_property_elements:
         mismatch = False
         j = i + 1
+        #check sul numero degli elementi. Se non hanno lo stesso numero di elementi -> no merge
+        if  j < len(run_property_elements) and len(run_property_elements[i]) !=  len(run_property_elements[j]):
+            continue
+
         while mismatch != True and j < len(run_property_elements):
             for child_of_node in node:
                 child_of_node_j = run_property_elements[j].find("./"  + child_of_node.tag)
@@ -107,6 +111,7 @@ i = 0
 for paragraph in paragraphs:
     #step 3 -> If two or more adjacent run elements in P have the same attributes, merge these run elements
     merge_possible_run_elements(paragraph)
+
     tree.write("output.xml")
     run_elements = paragraph.findall("./" + RUN_ELEMENT_TAG)
     i_run_elements = 1
@@ -174,6 +179,7 @@ for paragraph in paragraphs:
     # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
     for item in arr_childs_par_to_save:
         paragraph.append(item)
+
 
 tree.write("output.xml")
 exit(0)
