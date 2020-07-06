@@ -40,7 +40,7 @@ for paragraph in paragraphs:
         curr_run_elem = run_elements[i_run_elements]
         print(curr_run_elem.find("./" + TEXT_TAG).text)
         mismatch = False
-        if i_run_elements + 1 < len(run_elements):
+        if i_run_elements + 1 < len(run_elements) and curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val") != "-1":
             next_run_elem = run_elements[i_run_elements + 1]
             #step 4 -> compare the attributes in the current run element and the next run element
             j = i_run_elements + 1
@@ -52,7 +52,7 @@ for paragraph in paragraphs:
                     # mismatch
                     if child_next_property_elem == None  or (child_curr_property_elem.tag != SZCS_TAG and child_next_property_elem.attrib != child_curr_property_elem.attrib) == True:
                         mismatch=True
-            # case (A) -> if they have same attributes except the splitting mark, record the number of characters in the current text element to K, and add K-1 "0" to M (message)
+            # case (A) -> if they have same attributes except the splitting mark, record the number of characters in the current text element to K, and add K-1 "0" to M (message) and "1" at the end
             if(mismatch == False):
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) -1 ))
@@ -61,6 +61,7 @@ for paragraph in paragraphs:
             else:
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) - 1))
+        print(message)
         #last run elem of paragrap --> apply case (A)
 
         # step5 -> Repeat step 4 until all run elements in P have been addressed

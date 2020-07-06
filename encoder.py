@@ -13,13 +13,14 @@ TEXT_TAG = PREFIX_WORD_PROC + "t"
 SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 
-ENCODED_INFORMATION = "anna"
+
+ENCODED_INFORMATION = "empty"
 ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
-print(ENCODED_INFORMATION_BITS)
 def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
      i = 0
+
      for node in run_property_elements:
         mismatch = False
         j = i + 1
@@ -93,6 +94,11 @@ def check_if_available_space(index,paragraph):
 
 #START
 
+
+ENCODED_INFORMATION = input("Inserisci il testo segreto:")
+ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
+print(ENCODED_INFORMATION_BITS)
+
 tree = etree.parse('minimal/word/document.xml')
 root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
@@ -139,11 +145,9 @@ for paragraph in paragraphs:
                 if new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,10).__str__())
                 tag_element.text = text[0:N]
-                #check if new_run_elem contain text, otherwise no insert
-                if len(text[N:])>0:
-                    new_run_elem.find("./" + TEXT_TAG).text = text[N:]
-                    paragraph.insert(offset_run_elem,new_run_elem)
-                    offset_run_elem += 1
+                new_run_elem.find("./" + TEXT_TAG).text = text[N:]
+                paragraph.insert(offset_run_elem,new_run_elem)
+                offset_run_elem += 1
                 tree.write("output.xml")
                 N = 1
             i += 1
@@ -155,7 +159,6 @@ for paragraph in paragraphs:
     # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
     for item in arr_childs_par_to_save:
         paragraph.append(item)
-
 
 tree.write("output.xml")
 exit(0)

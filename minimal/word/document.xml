@@ -20,18 +20,65 @@
                <w:sz w:val="28"></w:sz>
                <w:szCs w:val="28"></w:szCs>
             </w:rPr>
-             <w:t>Information hiding1</w:t>
+             <w:t xml:space="preserve">Information hiding1</w:t>
          </w:r>
+         <w:r>
+            <w:rPr>
+               <w:rFonts w:hint="eastAsia"></w:rFonts>
+               <w:sz w:val="28"></w:sz>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+             <w:t>Information hiding2</w:t>
+         </w:r>
+
       </w:p>
-      <w:p>
+
+            <w:p>
          <w:pPr>
             <w:pStyle w:val="Normal" />
             <w:rPr />
          </w:pPr>
          <w:r>
             <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
             </w:rPr>
-            <w:t>Information hiding2</w:t>
+            <w:t xml:space="preserve">paragrafo 2</w:t>
+         </w:r>
+               <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 2</w:t>
+         </w:r>
+               <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 3</w:t>
+         </w:r>
+                              <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 4</w:t>
+         </w:r>
+                                <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 5</w:t>
+         </w:r>
+                                               <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 6</w:t>
+         </w:r>
+                                                              <w:r>
+            <w:rPr>
+               <w:szCs w:val="28"></w:szCs>
+            </w:rPr>
+            <w:t xml:space="preserve">paragrafo 2 parte 6 paragrafo 2 parte 6 paragrafo 2 parte 6 paragrafo 2 parte 6</w:t>
          </w:r>
       </w:p>
       <w:sectPr>
