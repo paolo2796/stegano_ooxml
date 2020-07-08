@@ -8,7 +8,11 @@
          </w:pPr>
          <w:r>
             <w:rPr />
-            <w:t>TERZO INPUT PARAGRAFO 1</w:t>
+            <w:t>SECONDO</w:t>
+         </w:r>
+         <w:r>
+            <w:rPr />
+            <w:t xml:space="preserve"> INPUT PARAGRAFO 1</w:t>
          </w:r>
       </w:p>
       <w:p>
@@ -18,41 +22,7 @@
          </w:pPr>
          <w:r>
             <w:rPr />
-            <w:t xml:space="preserve">TERZO INPUT </w:t>
-         </w:r>
-         <w:r>
-            <w:rPr>
-               <w:b />
-               <w:bCs />
-            </w:rPr>
-            <w:t>PARAGRAFO 2.</w:t>
-         </w:r>
-      </w:p>
-      <w:p>
-         <w:pPr>
-            <w:pStyle w:val="Normal" />
-            <w:rPr />
-         </w:pPr>
-         <w:r>
-            <w:rPr />
-            <w:t xml:space="preserve">TERZO INPUT </w:t>
-         </w:r>
-         <w:r>
-            <w:rPr>
-               <w:u w:val="single" />
-            </w:rPr>
-            <w:t>PARAGRAFO 3</w:t>
-         </w:r>
-      </w:p>
-      <w:p>
-         <w:pPr>
-            <w:pStyle w:val="Normal" />
-            <w:rPr>
-               <w:u w:val="single" />
-            </w:rPr>
-         </w:pPr>
-         <w:r>
-            <w:rPr />
+            <w:t>SECONDO INPUT PARAGRAFO 2.</w:t>
          </w:r>
       </w:p>
       <w:sectPr>

@@ -5,6 +5,7 @@ import utils
 
 
 PREFIX_WORD_PROC = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
 PARAGRAPH_TAG = PREFIX_WORD_PROC + "p"
 RUN_ELEMENT_TAG = PREFIX_WORD_PROC + "r"
 RUN_ELEM_PROPERTY_TAG = PREFIX_WORD_PROC + "rPr"
@@ -14,8 +15,6 @@ SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 
 
-ENCODED_INFORMATION = "empty"
-ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
 def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
@@ -164,8 +163,11 @@ for paragraph in paragraphs:
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG).insert(1,etree.Element(SZCS_TAG))
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,10).__str__())
 
+
                 tag_element.text = text[0:N]
                 new_run_elem.find("./" + TEXT_TAG).text = text[N:]
+                #aggiungo space preserve
+                new_run_elem.find("./" + TEXT_TAG).set("{http://www.w3.org/XML/1998/namespace}space","preserve")
                 paragraph.insert(offset_run_elem,new_run_elem)
                 offset_run_elem += 1
                 tree.write("output.xml")

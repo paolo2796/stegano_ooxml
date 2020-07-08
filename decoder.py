@@ -53,12 +53,12 @@ for paragraph in paragraphs:
                     if child_next_property_elem == None  or (child_curr_property_elem.tag != SZCS_TAG and child_next_property_elem.attrib != child_curr_property_elem.attrib) == True:
                         mismatch=True
             # case (A) -> if they have same attributes except the splitting mark, record the number of characters in the current text element to K, and add K-1 "0" to M (message) and "1" at the end
-            if(mismatch == False):
+            if(mismatch == False and curr_run_elem.find("./" + TEXT_TAG).text != None):
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) -1 ))
                 message += ("1")
             # case (B) -> record the number of characters in the current text element to K, and add K-1 "0" to M (message)
-            else:
+            elif curr_run_elem.find("./" + TEXT_TAG).text != None:
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) - 1))
         print(message)
