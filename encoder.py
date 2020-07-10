@@ -87,10 +87,10 @@ def check_if_available_space(index,paragraph):
     if count < count_zero + 1:
         node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]")
         if node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) != None:
-            node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "-1")
+            node.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "#")
         else:
             etree.SubElement(node, SZCS_TAG)
-            node.find("./" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "-1")
+            node.find("./" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "#")
         return False
 
     return True
@@ -98,11 +98,12 @@ def check_if_available_space(index,paragraph):
 #START
 
 
+PATH_FILE_EXTRACTED = input("Inserisci il file da steganografare:")
 ENCODED_INFORMATION = input("Inserisci il testo segreto:")
 ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
 print(ENCODED_INFORMATION_BITS)
 
-tree = etree.parse('minimal/word/document.xml')
+tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/document.xml')
 root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
 i = 0
@@ -170,7 +171,7 @@ for paragraph in paragraphs:
                 new_run_elem.find("./" + TEXT_TAG).set("{http://www.w3.org/XML/1998/namespace}space","preserve")
                 paragraph.insert(offset_run_elem,new_run_elem)
                 offset_run_elem += 1
-                tree.write("output.xml")
+                tree.write("stego/document.xml")
                 N = 1
             i += 1
             count -= 1
@@ -183,7 +184,7 @@ for paragraph in paragraphs:
         paragraph.append(item)
 
 
-tree.write("output.xml")
+tree.write("stego/document.xml")
 exit(0)
 
 

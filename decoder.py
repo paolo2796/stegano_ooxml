@@ -27,7 +27,7 @@ def toText(message):
 #step 1 -> read the codes of "document.xml". Initialize a set M to record the circular embedded informaton H.
 #arraybits encoded information
 message = ""
-tree = etree.parse('output.xml')
+tree = etree.parse('stego/document.xml')
 root = tree.getroot()
 
 #step 2 -> extract a paragraph element <w:p> .. </w:p> to P.
@@ -40,7 +40,7 @@ for paragraph in paragraphs:
         curr_run_elem = run_elements[i_run_elements]
         print(curr_run_elem.find("./" + TEXT_TAG).text)
         mismatch = False
-        if i_run_elements + 1 < len(run_elements) and curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val") != "-1":
+        if i_run_elements + 1 < len(run_elements) and curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val") != "#":
             next_run_elem = run_elements[i_run_elements + 1]
             #step 4 -> compare the attributes in the current run element and the next run element
             j = i_run_elements + 1
