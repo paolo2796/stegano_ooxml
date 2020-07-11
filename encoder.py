@@ -13,8 +13,6 @@ BODY_TAG = PREFIX_WORD_PROC + "body"
 TEXT_TAG = PREFIX_WORD_PROC + "t"
 SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
-
-
 def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
@@ -101,8 +99,9 @@ def check_if_available_space(index,paragraph):
 PATH_FILE_EXTRACTED = input("Inserisci il file da steganografare:")
 ENCODED_INFORMATION = input("Inserisci il testo segreto:")
 ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
-print(ENCODED_INFORMATION_BITS)
+print("TESTO IN BITS : " + ENCODED_INFORMATION_BITS)
 
+print("INIEZIONE IN CORSO .....")
 tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/document.xml')
 root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
@@ -112,7 +111,7 @@ for paragraph in paragraphs:
     #step 3 -> If two or more adjacent run elements in P have the same attributes, merge these run elements
     merge_possible_run_elements(paragraph)
 
-    tree.write("output.xml")
+    tree.write("stego/document.xml")
     run_elements = paragraph.findall("./" + RUN_ELEMENT_TAG)
     i_run_elements = 1
     offset_run_elem = 1
@@ -183,8 +182,8 @@ for paragraph in paragraphs:
     for item in arr_childs_par_to_save:
         paragraph.append(item)
 
-
 tree.write("stego/document.xml")
+print("Il file document.xml steganografato è stato salvato nella dir stego")
 exit(0)
 
 
