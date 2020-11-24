@@ -14,8 +14,7 @@ TEXT_TAG = PREFIX_WORD_PROC + "t"
 SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 
-
-
+PASSWORD = input("inserisci la password per decifrare il testo: ")
 
 def toText(message):
     extra = len(message) % 8
@@ -38,7 +37,7 @@ for paragraph in paragraphs:
     i_run_elements = 0
     while i_run_elements < len(run_elements):
         curr_run_elem = run_elements[i_run_elements]
-        print(curr_run_elem.find("./" + TEXT_TAG).text)
+        #print(curr_run_elem.find("./" + TEXT_TAG).text)
         mismatch = False
         if i_run_elements + 1 < len(run_elements) and curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val") != "#":
             next_run_elem = run_elements[i_run_elements + 1]
@@ -61,7 +60,7 @@ for paragraph in paragraphs:
             elif curr_run_elem.find("./" + TEXT_TAG).text != None:
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) - 1))
-        print(message)
+        #print(message)
         #last run elem of paragrap --> apply case (A)
 
         # step5 -> Repeat step 4 until all run elements in P have been addressed
@@ -70,7 +69,14 @@ for paragraph in paragraphs:
 
 #step 7 -> extract text from binary
 string_enc = "".join(chr(int("".join(map(str,message[i:i+8])),2)) for i in range(0,len(message),8))
-print("TESTO SEGRETO: " + string_enc)
+split_duplicate = string_enc.split(utils.MAGIC_CHAR_SPLIT)
+print("TESTO DECIFRATO: ")
+for p in split_duplicate:
+    try:
+        print(utils.decrypt(PASSWORD,p))
+    except:
+        print("duplicanza incompleta")
+        continue
 
 
 

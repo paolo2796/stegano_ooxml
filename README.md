@@ -3,8 +3,8 @@ INIEZIONE TESTO SEGRETO
 dalla directory principale eseguire il comando:
 
 "python encoder.py"
-1) Scegliere il numero di uno delle cartelle di input presenti nella dir "input"
-2) Inserire il testo segreto
+1) Scegliere uno dei file da steganografare, presenti nella directory "dir"
+2) Digitare il testo segreto
 
 ESTRAPOLAZIONE TESTO SEGRETO
 dalla directory principale eseguire il comando:

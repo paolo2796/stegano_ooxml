@@ -1,7 +1,15 @@
+from base64 import urlsafe_b64encode
+from hashlib import scrypt
+from os import urandom
+
 from lxml import etree
 import copy
 import random
 import utils
+from cryptography.fernet import Fernet
+
+
+
 
 
 PREFIX_WORD_PROC = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
@@ -79,7 +87,7 @@ def shift_run_element_by_pos(paragraph,start):
 def check_if_available_space(index,paragraph):
     count_zero = 0
     j = i
-    while ENCODED_INFORMATION_BITS[j % len(ENCODED_INFORMATION_BITS)] == "0":
+    while INFORMATION_TO_ENCODE_BITS[j % len(INFORMATION_TO_ENCODE_BITS)] == "0":
         j += 1
         count_zero += 1
     if count < count_zero + 1:
@@ -90,17 +98,25 @@ def check_if_available_space(index,paragraph):
             etree.SubElement(node, SZCS_TAG)
             node.find("./" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", "#")
         return False
-
     return True
 
+
+def printStat():
+    print("CAPACITA' TOTALE :" + total_counter_words.__str__())
+    print("CAPACITA' INCLUSIONE:" + total_counter_inclusion.__str__())
+    print("MINIMO DI BITS DA INIETTARE: " + len(INFORMATION_TO_ENCODE_BITS).__str__())
+
+
 #START
-
-
 PATH_FILE_EXTRACTED = input("Inserisci il file da steganografare:")
-ENCODED_INFORMATION = input("Inserisci il testo segreto:")
-ENCODED_INFORMATION_BITS = utils.text_to_binary(ENCODED_INFORMATION)
-print("TESTO IN BITS : " + ENCODED_INFORMATION_BITS)
-
+# secret message
+MESSAGE = input("inserisci testo segreto: ")
+#chiave simmetrica per cifrare il testo (AES-256)
+PASSWORD = input("Inserisci password per la cifratura del testo: ")
+ENCRYPTED = utils.encrypt(PASSWORD,MESSAGE)
+INFORMATION_TO_ENCODE_BITS = utils.text_to_binary(ENCRYPTED.decode('utf-8')) + utils.text_to_binary(utils.MAGIC_CHAR_SPLIT)
+total_counter_words = 0
+total_counter_inclusion = 0
 print("INIEZIONE IN CORSO .....")
 tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/document.xml')
 root = tree.getroot()
@@ -121,8 +137,7 @@ for paragraph in paragraphs:
     for child_paragraph in paragraph.findall("./"):
         if child_paragraph.tag != RUN_ELEMENT_TAG:
             arr_childs_par_to_save.append(child_paragraph)
-            paragraph.remove(child_paragraph)
-
+            #paragraph.remove(child_paragraph)
 
     #step 4 -> Extract a run element <w:r>…</w:r> to R, corresponding text element <w:t>…</w:t> to T, and the corresponding attributes to A.
     while i_run_elements <= len(run_elements):
@@ -141,14 +156,13 @@ for paragraph in paragraphs:
         #step 5 ->Make a count N=1 to accumulate the number of characters to be divided. Count the number of characters in T, and record it to C.
         count = len(tag_element.text)
         while count >=1:
-
+            total_counter_words+=1
             #check if enough space to inject information coded remain
             if(check_if_available_space(i,paragraph) == False):
                 break
-
             #step 6 -> Read one bit from the encoded information H circularly, decrease the value of C by one (in this process, assume the digit “1” is used for splitting):
             # case a
-            if(ENCODED_INFORMATION_BITS[i % len(ENCODED_INFORMATION_BITS)]) == "0":
+            if(INFORMATION_TO_ENCODE_BITS[i % len(INFORMATION_TO_ENCODE_BITS)]) == "0":
                 N += 1
             #case b
             else:
@@ -163,27 +177,33 @@ for paragraph in paragraphs:
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG).insert(1,etree.Element(SZCS_TAG))
                     new_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1,300).__str__())
 
-
                 tag_element.text = text[0:N]
                 new_run_elem.find("./" + TEXT_TAG).text = text[N:]
                 #aggiungo space preserve
+                tag_element.set("{http://www.w3.org/XML/1998/namespace}space","preserve")
                 new_run_elem.find("./" + TEXT_TAG).set("{http://www.w3.org/XML/1998/namespace}space","preserve")
-                paragraph.insert(offset_run_elem,new_run_elem)
+                paragraph.insert(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]").getparent().index(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (offset_run_elem).__str__() + "]")) + 1,new_run_elem)
                 offset_run_elem += 1
                 tree.write("stego/document.xml")
                 N = 1
             i += 1
+            total_counter_inclusion = i
             count -= 1
             # step 7 -> Go to step 6 until the value of C is one.
         i_run_elements += 1
         offset_run_elem += 1
         # step 9 -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
     # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
-    for item in arr_childs_par_to_save:
-        paragraph.append(item)
+  #  for item in arr_childs_par_to_save:
+  #      paragraph.append(item)
+
+printStat()
+if len(INFORMATION_TO_ENCODE_BITS) > total_counter_inclusion:
+    print("non è stato possibile iniettare il testo segreto poichè presenta un numero di bits maggiori della capacità di inclusione")
+    exit(0)
 
 tree.write("stego/document.xml")
-print("Il file document.xml steganografato è stato salvato nella dir stego")
+print("Il file document.xml steganografato è stato salvato nella directory 'stego'")
 exit(0)
 
 
