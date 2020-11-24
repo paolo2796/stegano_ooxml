@@ -25,7 +25,6 @@ def merge_possible_run_elements(paragraph):
      #ricerca run elements nel paragrafo
      run_property_elements = paragraph.findall("./" + RUN_ELEMENT_TAG + "/" + RUN_ELEM_PROPERTY_TAG)
      i = 0
-
      for node in run_property_elements:
         mismatch = False
         j = i + 1
@@ -60,8 +59,14 @@ def merge_possible_run_elements(paragraph):
                 while x <= j:
                     #append  node i + 1 to base node
                     node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x + 1).__str__() + "]" + "/" + TEXT_TAG)
-                    base_node =  paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG)
-                    base_node.text = base_node.text + node.text
+
+                    #NEW DA TESTARE COMPLETO
+                    if paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG) == None:
+                        paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]").append(etree.Element(TEXT_TAG))
+                        paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG).text = node.text
+                    else:
+                        base_node =  paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG)
+                        base_node.text = base_node.text + node.text
                     x += 1
                 x = i + 1
                 while x <= j:
@@ -76,12 +81,6 @@ def merge_possible_run_elements(paragraph):
             break
         i +=1
 
-
-def shift_run_element_by_pos(paragraph,start):
-    count = len(paragraph.findall("./" + RUN_ELEMENT_TAG))
-    while(count >= start):
-        paragraph.insert(count + 1,copy.copy(paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (count).__str__() + "]")))
-        count -= 1
 
 
 def check_if_available_space(index,paragraph):
@@ -122,12 +121,12 @@ tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/docum
 root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
 i = 0
-# step 10 -> Repeat Step 2 to Step 9 until all paragraph elements have been addressed.
+# step 10 -> Repeat Step 2 to Step test_per_la_scalabilità until all paragraph elements have been addressed.
 for paragraph in paragraphs:
     #step 3 -> If two or more adjacent run elements in P have the same attributes, merge these run elements
     merge_possible_run_elements(paragraph)
 
-    tree.write("stego/document.xml")
+   # tree.write("stego/document.xml")
     run_elements = paragraph.findall("./" + RUN_ELEMENT_TAG)
     i_run_elements = 1
     offset_run_elem = 1
@@ -146,17 +145,23 @@ for paragraph in paragraphs:
         if run_elements[i_run_elements - 1].find("./" + TEXT_TAG) == None:
             run_elements[i_run_elements - 1].append(etree.Element(TEXT_TAG))
             run_elements[i_run_elements - 1].find("./" + TEXT_TAG).text=""
+        total_counter_words += len(run_elements[i_run_elements - 1].find("./" + TEXT_TAG).text)
 
         tag_element = run_elements[i_run_elements - 1].find("./" + TEXT_TAG)
-        #se non contiene il tag szCS lo aggiungo al run element corrente
-        if run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) == None:
-            run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG).append(etree.Element(SZCS_TAG))
-            run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1, 10).__str__())
+        # se non contiene il tag rpr lo aggiungo al run element corrente --> DA TESTARE COMPLETO
+        if run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG) == None:
+            rpr = etree.Element(RUN_ELEM_PROPERTY_TAG)
+            rpr.append(etree.Element(SZCS_TAG))
+            rpr.find("./" + SZCS_TAG).set(PREFIX_WORD_PROC + "val", random.randint(1, 300).__str__())
+            run_elements[i_run_elements - 1].append(rpr)
+        # se non contiene il tag szCS lo aggiungo al run element corrente
+        elif run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG) == None:
+                run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG).append(etree.Element(SZCS_TAG))
+                run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1, 300).__str__())
 
         #step 5 ->Make a count N=1 to accumulate the number of characters to be divided. Count the number of characters in T, and record it to C.
         count = len(tag_element.text)
         while count >=1:
-            total_counter_words+=1
             #check if enough space to inject information coded remain
             if(check_if_available_space(i,paragraph) == False):
                 break
@@ -187,15 +192,15 @@ for paragraph in paragraphs:
                 tree.write("stego/document.xml")
                 N = 1
             i += 1
-            total_counter_inclusion = i
             count -= 1
             # step 7 -> Go to step 6 until the value of C is one.
         i_run_elements += 1
         offset_run_elem += 1
-        # step 9 -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
+        # step test_per_la_scalabilità -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
     # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
   #  for item in arr_childs_par_to_save:
   #      paragraph.append(item)
+total_counter_inclusion = i
 
 printStat()
 if len(INFORMATION_TO_ENCODE_BITS) > total_counter_inclusion:

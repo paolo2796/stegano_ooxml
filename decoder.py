@@ -75,7 +75,7 @@ for p in split_duplicate:
     try:
         print(utils.decrypt(PASSWORD,p))
     except:
-        print("duplicanza incompleta")
+        print("l'ultima duplicazione del testo segreto non può essere decifrata poichè incompleta --> " + p)
         continue
 
 
