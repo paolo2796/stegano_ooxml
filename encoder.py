@@ -1,19 +1,13 @@
-from base64 import urlsafe_b64encode
-from hashlib import scrypt
-from os import urandom
-
 from lxml import etree
 import copy
 import random
 import utils
-from cryptography.fernet import Fernet
 
 
 
 
 
 PREFIX_WORD_PROC = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-
 PARAGRAPH_TAG = PREFIX_WORD_PROC + "p"
 RUN_ELEMENT_TAG = PREFIX_WORD_PROC + "r"
 RUN_ELEM_PROPERTY_TAG = PREFIX_WORD_PROC + "rPr"
@@ -44,6 +38,8 @@ def merge_possible_run_elements(paragraph):
                 while x < j:
                     #append  node i + 1 to base node
                     node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x + 1).__str__() + "]" + "/" + TEXT_TAG)
+                    if node == None:
+                        break
                     base_node =  paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG)
                     base_node.text = base_node.text + node.text
                     x += 1
@@ -59,7 +55,8 @@ def merge_possible_run_elements(paragraph):
                 while x <= j:
                     #append  node i + 1 to base node
                     node = paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (x + 1).__str__() + "]" + "/" + TEXT_TAG)
-
+                    if node == None:
+                        break
                     #NEW DA TESTARE COMPLETO
                     if paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]" + "/" + TEXT_TAG) == None:
                         paragraph.find("./" + RUN_ELEMENT_TAG + "[" + (i + 1).__str__() + "]").append(etree.Element(TEXT_TAG))
@@ -108,38 +105,42 @@ def printStat():
 
 #START
 PATH_FILE_EXTRACTED = input("Inserisci il file da steganografare:")
+#step 1 -> Leggi il codice dal file "document.xml", relativo al documento D
+tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/document.xml')
+root = tree.getroot()
+
 # secret message
 MESSAGE = input("inserisci testo segreto: ")
-#chiave simmetrica per cifrare il testo (AES-256)
+# inserisci passphrase per la generazione della chiave simmetrica
 PASSWORD = input("Inserisci password per la cifratura del testo: ")
+# step 2 -> Cifra il testo segreto H mediante l’algoritmo AES-CBC, usando la chiave simmetrica
 ENCRYPTED = utils.encrypt(PASSWORD,MESSAGE)
+#step 3 -> aggiungi alla fine del testo cifrato il carattere di divisione "%"
 INFORMATION_TO_ENCODE_BITS = utils.text_to_binary(ENCRYPTED.decode('utf-8')) + utils.text_to_binary(utils.MAGIC_CHAR_SPLIT)
 total_counter_words = 0
 total_counter_inclusion = 0
 print("INIEZIONE IN CORSO .....")
-tree = etree.parse("input/" +  PATH_FILE_EXTRACTED + '/file_extracted/word/document.xml')
-root = tree.getroot()
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
 i = 0
-# step 10 -> Repeat Step 2 to Step test_per_la_scalabilità until all paragraph elements have been addressed.
+# step 14 -> Ripeti step 6 - step 13 finché tutti gli elementi <w:r> in P  non sono stati risolti;
 for paragraph in paragraphs:
-    #step 3 -> If two or more adjacent run elements in P have the same attributes, merge these run elements
+    #step 5 -> IF (2 o più elementi <w:r> consecutivi in P hanno gli stessi attributi) THEN unisci gli elementi consecutivi <w:r>.;
     merge_possible_run_elements(paragraph)
 
-   # tree.write("stego/document.xml")
     run_elements = paragraph.findall("./" + RUN_ELEMENT_TAG)
     i_run_elements = 1
     offset_run_elem = 1
 
-    # rimuovo tutti i nodi != RUN_ELEMENT_TAG e li memorizzo in un array
+    # aggiungo tutti i nodi != RUN_ELEMENT_TAG e li memorizzo in un array
     arr_childs_par_to_save = []
     for child_paragraph in paragraph.findall("./"):
         if child_paragraph.tag != RUN_ELEMENT_TAG:
             arr_childs_par_to_save.append(child_paragraph)
             #paragraph.remove(child_paragraph)
 
-    #step 4 -> Extract a run element <w:r>…</w:r> to R, corresponding text element <w:t>…</w:t> to T, and the corresponding attributes to A.
+    #step 14 -> risolvi tutti gli elementi <w:r> in P
     while i_run_elements <= len(run_elements):
+        # step8 -> Inizializza il contatore N=1 per accumulare il numero di caratteri da dividere. Successivamente, conta il numero di caratteri in T, e memorizzali nella variabile C.
         N = 1
         #se non contiene il tag <w:t> -> aggiungilo al run element corrente
         if run_elements[i_run_elements - 1].find("./" + TEXT_TAG) == None:
@@ -159,13 +160,14 @@ for paragraph in paragraphs:
                 run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG).append(etree.Element(SZCS_TAG))
                 run_elements[i_run_elements - 1].find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).set(PREFIX_WORD_PROC + "val",random.randint(1, 300).__str__())
 
-        #step 5 ->Make a count N=1 to accumulate the number of characters to be divided. Count the number of characters in T, and record it to C.
+        # step 8 -> Inizializza il contatore N=1 per accumulare il numero di caratteri da dividere. Successivamente, conta il numero di caratteri in T, e memorizzali nella variabile C.
         count = len(tag_element.text)
+        #step 12 -> Ritorna allo step 9 fino a quando C >= 1;
         while count >=1:
             #check if enough space to inject information coded remain
             if(check_if_available_space(i,paragraph) == False):
                 break
-            #step 6 -> Read one bit from the encoded information H circularly, decrease the value of C by one (in this process, assume the digit “1” is used for splitting):
+            #step 9,10,11
             # case a
             if(INFORMATION_TO_ENCODE_BITS[i % len(INFORMATION_TO_ENCODE_BITS)]) == "0":
                 N += 1
@@ -196,7 +198,7 @@ for paragraph in paragraphs:
             # step 7 -> Go to step 6 until the value of C is one.
         i_run_elements += 1
         offset_run_elem += 1
-        # step test_per_la_scalabilità -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
+        # step test_per_la_scalabilita -> Repeat Step 4 to Step 8 until all run elements have been addressed in the paragraph element P
     # push di tutti i nodi != RUN_ELEMENT_TAG, memorizzati in arr_childs_par_to_save
   #  for item in arr_childs_par_to_save:
   #      paragraph.append(item)

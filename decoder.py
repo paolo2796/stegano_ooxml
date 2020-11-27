@@ -16,23 +16,16 @@ SZCS_TAG = PREFIX_WORD_PROC + "szCs"
 
 PASSWORD = input("inserisci la password per decifrare il testo: ")
 
-def toText(message):
-    extra = len(message) % 8
-    if extra>0:
-        padsize = 8 - extra
-        message += message + ('0' * padsize)
-    return [chr(utils.binarytoDecimal(message[i:i+8])) for i in range(0, len(message), 8)]
 
-#step 1 -> read the codes of "document.xml". Initialize a set M to record the circular embedded informaton H.
-#arraybits encoded information
+
 message = ""
 tree = etree.parse('stego/document.xml')
 root = tree.getroot()
 
-#step 2 -> extract a paragraph element <w:p> .. </w:p> to P.
 paragraphs = root.findall("./" + BODY_TAG + "/" + PARAGRAPH_TAG)
+#step 3 ->Estrai paragrafo <w:p> in P;
 for paragraph in paragraphs:
-    #step 3 -> extract a run element <w:r> ... </w:r> to R, and the text element <w:t> ... </w:t> in the run element to T
+    #step 4 -> extract a run element <w:r> ... </w:r> to R, and the text element <w:t> ... </w:t> in the run element to T
     run_elements = paragraph.findall("./" + RUN_ELEMENT_TAG)
     i_run_elements = 0
     while i_run_elements < len(run_elements):
@@ -41,10 +34,10 @@ for paragraph in paragraphs:
         mismatch = False
         if i_run_elements + 1 < len(run_elements) and curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + SZCS_TAG).get(PREFIX_WORD_PROC + "val") != "#":
             next_run_elem = run_elements[i_run_elements + 1]
-            #step 4 -> compare the attributes in the current run element and the next run element
             j = i_run_elements + 1
             curr_property_elements = curr_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG)
             # check if tag RPR is empty
+            #step 6 -> Confronta gli attributi dell’elemento R con il suo successore R+1
             if curr_property_elements != None:
                 for child_curr_property_elem in curr_property_elements:
                     child_next_property_elem = next_run_elem.find("./" + RUN_ELEM_PROPERTY_TAG + "/" + child_curr_property_elem.tag)
@@ -61,13 +54,11 @@ for paragraph in paragraphs:
                 text_tag = curr_run_elem.find("./" + TEXT_TAG).text
                 message += ("0" * (len(text_tag) - 1))
         #print(message)
-        #last run elem of paragrap --> apply case (A)
 
-        # step5 -> Repeat step 4 until all run elements in P have been addressed
     #step 6 -> repeat step 2 to step 5 until all paragraph elements have been addressed
         i_run_elements += 1
 
-#step 7 -> extract text from binary
+#step 11 -> Estrai il testo segreto H da M.
 string_enc = "".join(chr(int("".join(map(str,message[i:i+8])),2)) for i in range(0,len(message),8))
 split_duplicate = string_enc.split(utils.MAGIC_CHAR_SPLIT)
 print("TESTO DECIFRATO: ")

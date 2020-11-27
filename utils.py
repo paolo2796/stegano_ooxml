@@ -1,11 +1,5 @@
-import sys
-# AES 256 encryption/decryption using pycryptodome library
-
-from base64 import b64encode, b64decode, urlsafe_b64encode
+from base64 import urlsafe_b64encode
 import hashlib
-from Cryptodome.Cipher import AES
-import os
-from Cryptodome.Random import get_random_bytes
 from cryptography.fernet import Fernet
 
 SALT = "1234567891234567".encode('utf-8')
