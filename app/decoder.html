@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Codificatore</title>
+    <style>
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.button_download {
+  background-color: red;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+
+</head>
+<body onload="checkIfSuccess()">
+
+<ul>
+    <div class="box_testo_segreto" hidden>
+        <h1 style="color:red">Risultato</h1>
+        <p id="secret_text"></p>
+    </div>
+
+    <h1>Carica il file stego</h1>
+
+    <form enctype="multipart/form-data" method="POST" action="/decoding">
+        <input type="file" name="file_stego">
+        <input type="text" name="password" placeholder="inserisci password">
+        <input type="submit" id="input_8" class="button" value="Estrai testo segreto">
+    </form>
+
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+    function checkIfSuccess(){
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const success = urlParams.get('testo_segreto');
+        if(success){
+            alert("File decodificato correttamente!");
+            $(".box_testo_segreto").show();
+            $("#secret_text").text(success);
+
+        }
+    }
+
+</script>
+</body>
+
+</html>
